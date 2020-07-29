@@ -1,0 +1,10 @@
+runtime: nodejs10
+
+service: default
+
+instance_class: F4
+
+env_variables:
+  PROJECT_ID: "parktix-cloud"
+  DATABASE_URL: "https://parktix-26bdf.firebaseio.com/"
+  STORAGE_BUCKET: 'masterlife-app.appspot.com'
