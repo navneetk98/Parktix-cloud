@@ -1,11 +1,13 @@
 const {
     firestore,
-  } = require("./../../firebase");
+  } = require("../../../firebase");
 
 module.exports = {
     fun: async (req, res) => {
+        let datafeild = await firestore.collection('admin-profiles').get();
         res.send({
-            "hello" : "hello"
+            "hello" : "hello",
+            "data" : datafeild
         });
     }
 }
