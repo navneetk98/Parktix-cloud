@@ -5,7 +5,7 @@ const Firebase = () => {
 
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount),
-            databaseURL: process.env.DATABASE_URL,
+            databaseURL: "https://parktix-26bdf.firebaseio.com"
             
         });
     
@@ -14,6 +14,7 @@ const Firebase = () => {
             return admin.auth().verifyIdToken(idToken)
         },
         firestore: admin.firestore(),
+        realtime : admin,
         auth: admin.auth()
     }
 }
