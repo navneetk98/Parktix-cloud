@@ -3,14 +3,16 @@ var morgan = require('morgan');
 const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 7000;
 var hostname = 'localhost';
-
+const {
+    firestore,
+    realtime
+} = require("../firebase");
 
 var app = express();
 
 app.use(morgan('dev'));
 
-function auth (req, res, next) {
-    // console.log(req.headers);
+async function auth  (req, res, next) {
     var authHeader = req.headers.authorization;
     if (!authHeader) {
         var err = new Error('You are not authenticated!');
@@ -22,12 +24,25 @@ function auth (req, res, next) {
     var auth = new Buffer(authHeader.split(' ')[1], 'base64').toString().split(':');
     var user = auth[0];
     var pass = auth[1];
-    if (user == 'admin' && pass == 'password') {
-        next(); // authorized
-    } else {
+    const verifyMAC = await realtime.database().ref('allowed_devices').child(user).once('value');
+    const location = verifyMAC.val();
+    req['locat']=location;
+    if(location=== null)
+    {
         var err = new Error('You are not authenticated!');
         err.status = 401;
         next(err);
+    }
+    else
+    {
+        if(pass == 'qwaszx')
+        next(); // authorized
+        else
+        {
+            var err = new Error('You are not authenticated!');
+            err.status = 401;
+            next(err);
+        }
     }
 }
 
