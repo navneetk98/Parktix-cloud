@@ -67,8 +67,16 @@ module.exports = {
             return res.status(400).send("This is not exit code");
         }
         const getVehicle = await (await realtime.database().ref('vehicles').child(uid).child(vid).once('value')).val();
+        if(getVehicle === null)
+        {
+            return res.status(400).send("Vehicle Deleted");
+        }
         const location = req.locat;
-        if (getVehicle.token !== token) {
+        
+        if (getVehicle.status !== "ACCEPTED" ) {
+            return res.status(400).send("Not Paid");
+        }
+        if (getVehicle.token !== token ) {
             return res.status(400).send("Token Mismatch");
         }
 

@@ -1,21 +1,21 @@
-name: gcloud
-on:
-  push:
-    branches:
-      - master
+# name: gcloud
+# on:
+#   push:
+#     branches:
+#       - master
 
-jobs:
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
+# jobs:
+#   deploy:
+#     name: Deploy
+#     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.ref }}
-      - uses: actions-hub/gcloud@271.0.0
-        env:
-          PROJECT_ID: ${{secrets.GCLOUD_PROJECT_ID}}
-          APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
-        with:
-          args: app deploy services.yaml
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           ref: ${{ github.ref }}
+#       - uses: actions-hub/gcloud@271.0.0
+#         env:
+#           PROJECT_ID: ${{secrets.GCLOUD_PROJECT_ID}}
+#           APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
+#         with:
+#           args: app deploy services.yaml
