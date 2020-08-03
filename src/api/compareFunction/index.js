@@ -4,12 +4,18 @@ const {
 } = require("../../../firebase");
 
 var stringSimilarity = require('string-similarity');
-const { v4: uuidv4 } = require('uuid');
+const {
+    v4: uuidv4
+} = require('uuid');
 
 module.exports = {
-    fun: async (req, res) => {
+    in_fun: async (req, res) => {
         // let datafeild = await firestore.collection('admin-profiles').get();
-        const { uid, plateCandidates, vid } = req.body;
+        const {
+            uid,
+            plateCandidates,
+            vid
+        } = req.body;
 
         const getVehicle = await (await realtime.database().ref('vehicles').child(uid).child(vid).once('value')).val();
         const location = req.locat;
@@ -47,10 +53,39 @@ module.exports = {
         realtime.database().ref().update(updates);
 
         return res.status(200).send({
-            "UId": uid,
-            "Plate Candidate": plateCandidates,
-            "Match": matches
+            "UId": uid
+        });
+    },
+    out_fun: async (req, res) => {
+        const {
+            uid,
+            token,
+            vid,
+            enex
+        } = req.body;
+        if (enex !== "ex") {
+            return res.status(400).send("This is not exit code");
+        }
+        const getVehicle = await (await realtime.database().ref('vehicles').child(uid).child(vid).once('value')).val();
+        const location = req.locat;
+        if (getVehicle.token !== token) {
+            return res.status(400).send("Token Mismatch");
+        }
+
+        var updates = {};
+        updates['/logs/' + location +'/' + getVehicle.logID + '/exitts'] = Date.now();
+        updates['/logs/' + location +'/' + getVehicle.logID + '/status'] = "EXITED";
+        updates['/vehicles/' + uid + '/' + vid + '/status'] = "READY";
+        updates['/vehicles/' + uid + '/' + vid + '/token'] = null;
+        updates['/vehicles/' + uid + '/' + vid + '/amount'] = null;
+        updates['/vehicles/' + uid + '/' + vid + '/locID'] = null;
+        updates['/vehicles/' + uid + '/' + vid + '/locName'] = null;
+        updates['/vehicles/' + uid + '/' + vid + '/logID'] = null;
+
+        realtime.database().ref().update(updates);
+
+        return res.status(200).send({
+            "UId": uid
         });
     }
 }
-
