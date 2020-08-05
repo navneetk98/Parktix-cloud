@@ -95,5 +95,46 @@ module.exports = {
         return res.status(200).send({
             "UId": uid
         });
+    },
+    in_simple: async (req, res) => {
+        const {
+            uid,
+            vid
+        } = req.body;
+
+
+        const getVehicle = await (await realtime.database().ref('vehicles').child(uid).child(vid).once('value')).val();
+        const location = req.locat;
+        const locationData = await (await realtime.database().ref('locations').child(location).once('value')).val();
+        console.log(locationData);
+        if (getVehicle == null) {
+            return res.status(400).send("No such vehicle exist");
+        }
+        if (getVehicle.status !== "READY") {
+            return res.status(400).send("Vehicle not ready");
+        }
+
+        const registerNo = getVehicle.regno;
+        var updates = {};
+        var newKey = realtime.database().ref('logs').child(location).push().key;
+
+        updates['/logs/' + location + '/' + newKey] = {
+            'vregno': registerNo,
+            'entryts': Date.now(),
+            'status': 'ENTERED',
+        };
+        updates['/vehicles/' + uid + '/' + vid + '/status'] = "PENDING";
+        updates['/vehicles/' + uid + '/' + vid + '/token'] = uuidv4();
+        updates['/vehicles/' + uid + '/' + vid + '/amount'] = locationData.price;
+        updates['/vehicles/' + uid + '/' + vid + '/locID'] = location;
+        updates['/vehicles/' + uid + '/' + vid + '/locName'] = locationData.name;
+        updates['/vehicles/' + uid + '/' + vid + '/logID'] = newKey;
+
+        realtime.database().ref().update(updates);
+
+        return res.status(200).send({
+            "UId": uid
+        });
+
     }
 }

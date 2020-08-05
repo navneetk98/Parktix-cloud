@@ -1,6 +1,7 @@
 const express = require("express");
 const {
   in_fun,
+  in_simple,
   out_fun
    } = require('./index');
 module.exports = () => {
@@ -10,6 +11,9 @@ module.exports = () => {
   });
   routes.post('/verify', (req, res) => {
     return in_fun(req, res);
+});
+routes.post('/simple_verify', (req, res) => {
+  return in_simple(req, res);
 });
 routes.post('/out_verify', (req, res) => {
   return out_fun(req, res);
